@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高校警情-数据可视化平台</title>
+    <link rel="stylesheet" href="../static/css/index.css">
+</head>
+<body>
+<script src="../static/js/echarts.min.js"></script>
+<script src="../static/js/flexible.js"></script>
+<script src="../static/js/jquery.js"></script>
+    <header>
+        <h1>
+            <a href="/" class="a2">首页</a>
+            <a href="/alldata" class="a2">反诈分享</a>
+            <a href="/admin" class="a2">管理后台</a>
+            <a class="a3">高校警情-数据可视化平台</a>
+        </h1>
+        <div class="showTime">数据最后更新时间：{{ lasttime }}</div>
+
+        <div class="showData">数据来源:广州天河公安微信公众号</div>
+    </header>
+    <!-- 页面主体 -->
+    <section class="mainbox">
+        <div class="column">
+            <div class="panel bar">
+                <h2>各高校诈骗案件发生情况排行榜</h2>
+                <div class="chart"></div>
+                <div class="panel-footer"></div>
+            </div>
+            <div class="panel line">
+                <h2>2022年各月份高校受骗情况
+                    <a href="javascript:;">受骗金额</a><a href="javascript:;">案件次数</a>
+                </h2>
+                <div class="chart"></div>
+                <div class="panel-footer"></div>
+            </div>
+        </div>
+        <div class="column">
+            <!-- 案例模块制作 -->
+            <div class="al">
+                <div class="al-text">
+                    <ul>
+                        <li>本月发生案件</li>
+                        <li>累计被骗金额</li>
+                    </ul>
+                </div>
+                <div class="al-count ">
+                    <ul> 
+                        <li><a href="javascript:;" class="fraud1">{{ monthfraudcount|tojson }}</a></li>
+                        <li><a href="javascript:;" class="fraud2">{{ moneyfraudcount|tojson }}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="box">
+                <div class="panel1 box1" style="overflow: hidden">
+                        <div class="chart">
+                            <table>
+                            <thead>
+                                <h2>新增数据</h2>
+                                <tr>
+                                    <th>学校名称</th>
+                                    <th>诈骗方式</th>
+                                    <th>诈骗金额</th>
+                                    <th>月份</th>
+                                </tr>
+                            </thead>
+
+                            <tbody  id="newData" >
+                                {% for data in tempdata %}
+                                <tr>
+                                    <td>{{ data.schoolName }}</td>
+                                    <td>{{ data.fraudWay }}</td>
+                                    <td>{{ data.money }}元</td>
+                                    <td>{{ data.month }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+
+                        </table>
+{#                            文字自动滚动#}
+                            <script>
+                                var scroll = setInterval('autoScroll(".chart")', 500); // 时间越小速度越快
+
+			     // 鼠标移上去取消事件
+			     $(".chart").hover(function() {
+			         clearInterval(scroll);
+			     }, function() {
+			         clearInterval(scroll);
+			         scroll = setInterval('autoScroll(".chart")', 500);
+			     })
+
+			   	function autoScroll(obj) {
+			         $(obj).find("tbody:first").animate({
+			             marginTop: "-10px"
+			         }, 10, function () {
+			             $(this).css({
+			                 marginTop: "0px"
+			             }).find("tr:first").appendTo(this); //将该行的margin值置零,然后插入到最后
+			         })
+			     }
+                            </script>
+
+
+                        </div>
+                    <div class="panel-footer"></div>
+                </div>
+
+                <div class="panel2 box2">
+                    <h2>案件类型与受骗金额</h2>
+                    <div class="chart"></div>
+                    <div class="panel-footer"></div>
+                </div>
+
+                <div class="fraud-chart1" >
+                    <h2>本月诈骗类型及发生次数</h2>
+                    <div class="chart1"></div>
+                </div>
+                <div class="fraud-chart2" >
+                    <h2>本月诈骗类型及被骗金额</h2>
+                    <div class="chart2"></div>
+                </div>
+
+            </div>
+        </div>
+        <div class="column">
+            <div class="panel pie">
+                <h2>诈骗案件-TOP5</h2>
+                <div class="chart"></div>
+                <div class="panel-footer"></div>
+            </div>
+            <div class="panel bar2">
+                <h2>诈骗金额-TOP10</h2>
+                <div class="chart"></div>
+                <div class="panel-footer"></div>
+            </div>
+        </div>
+    </section>
+
+<script>
+   //本月发生案件
+    $(".fraud1").on("click",function(){
+        if($(".fraud1").text()==="0"){
+            alert('本月暂无案件发生');
+        }else{
+            if ($(".fraud-chart1").css("display")==="block"){
+        $(".fraud-chart1").css('display','none')
+        }else{
+        $(".fraud-chart2").css('display', 'none');
+        $(".fraud-chart1").css('display','block');
+        (function(){
+            const zoomData=[
+        {
+            type: "inside",  // 支持内部鼠标滚动平移
+            start: 0,
+            end: 80,
+            zoomOnMouseWheel: false,  // 关闭滚轮缩放
+            moveOnMouseWheel: true, // 开启滚轮平移
+            moveOnMouseMove: false  // 鼠标移动能触发数据窗口平移
+          }
+      ];
+    //1.实例化对象
+    var myChart = echarts.init(document.querySelector('.fraud-chart1 .chart1'));
+    //2.指定配置项和数据
+  var option = {
+      dataZoom:zoomData,
+      tooltip: {
+    trigger: 'axis',
+          formatter: '{b} <br/> {a}:{c}次',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  xAxis: {
+    type: 'category',
+    data: {{ hidefraud|tojson }},
+      axisLabel: {
+          color: "#fff",
+          fontSize: "15"
+        },
+  },
+  yAxis: {
+
+    type: 'value',
+      minInterval: 1,
+      axisLabel: {
+          color: "#fff",
+          fontSize: "15"
+        },
+  },
+  series: [
+    {
+    color:"#0080ff",
+      name: '发生次数',
+      type: 'bar',
+      barWidth: '20%',
+      data: {{ hidecount|tojson }},
+        itemStyle: {
+                // 修改柱子圆角
+                barBorderRadius: 2,
+              }
+    }
+  ]
+};
+      //3.把配置项给实例对象
+      myChart.setOption(option);
+      //4.让图表跟随屏幕自适应
+      window.addEventListener("resize", function() {
+        myChart.resize();
+      });
+})()
+        }
+    }
+    })
+   //本月累计金额
+   $(".fraud2").on("click",function(){
+        if($(".fraud2").text()==="0"){
+            alert('本月暂无被骗金额');
+        }else {
+            if ($(".fraud-chart2").css("display") === "block") {
+                $(".fraud-chart2").css('display', 'none')
+            } else {
+                $(".fraud-chart1").css('display','none');
+                $(".fraud-chart2").css('display', 'block');
+                (function(){
+    //1.实例化对象
+    var myChart = echarts.init(document.querySelector('.fraud-chart2 .chart2'));
+    //2.指定配置项和数据
+          var option = {
+          tooltip: {
+            trigger: 'item',
+              formatter: '{a} <br/>{b}: {c}元 ({d}%)'
+          },
+          legend: {
+             textStyle: {
+                color: "rgba(255,255,255,)",
+            fontSize: "12"
+        },
+            orient: 'vertical',
+            left: 'left'
+          },
+          series: [
+            {
+              name: '案件类型',
+              type: 'pie',
+              radius: '80%',
+              data: {{ dict4|tojson }},
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              }
+            }
+          ]
+        };
+      //3.把配置项给实例对象
+      myChart.setOption(option);
+      //4.让图表跟随屏幕自适应
+      window.addEventListener("resize", function() {
+        myChart.resize();
+      });
+})()
+            }
+        }
+    })
+</script>
+<script>
+    let bar = sessionStorage.getItem("bar");
+    let pie = sessionStorage.getItem("pie")
+
+//柱状图
+if(bar === "1" ){
+    //柱状图2
+    (function(){
+    const zoomData=[
+        {
+            type: "inside",  // 支持内部鼠标滚动平移
+            yAxisIndex:[0],
+            start: 0,
+            end: 30,
+            zoomOnMouseWheel: false,  // 关闭滚轮缩放
+            moveOnMouseWheel: true, // 开启滚轮平移
+            moveOnMouseMove: false  // 鼠标移动能触发数据窗口平移
+          }
+      ]
+    //1.实例化对象
+    var myChart = echarts.init(document.querySelector('.bar .chart'));
+    //2.指定配置项和数据
+  var option = {
+      dataZoom: zoomData,
+  tooltip: {
+    trigger: 'axis',
+       formatter: '{b} <br/> {a}:{c}次',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    containLabel: true
+  },
+  xAxis: {
+          minInterval: 1,
+    type: 'value',
+    boundaryGap: [0, 0.01],
+    axisLabel: {
+          color: "white",
+          fontSize: "15"
+        },
+  },
+  yAxis: {
+    type: 'category',
+    data: {{ univName|tojson }},
+    axisLabel: {
+          color: "white",
+          fontSize: "15"
+        },
+
+  },
+  series: [
+    {
+    color:"#e00522",
+      name: '累计发生',
+      type: 'bar',
+      barWidth: '60%',
+      data: {{ count|tojson }},
+        itemStyle: {
+                // 修改柱子圆角
+                barBorderRadius: 2,
+              }
+    }
+  ]
+};
+      //3.把配置项给实例对象
+      myChart.setOption(option);
+      //4.让图表跟随屏幕自适应
+      window.addEventListener("resize", function() {
+        myChart.resize();
+      });
+})();
+}else{
+    //柱状图1
+    (function(){
+    const zoomData=
+        {
+            type: "inside",  // 支持内部鼠标滚动平移
+            start: 0,
+            end: 30,
+            zoomOnMouseWheel: false,  // 关闭滚轮缩放
+            moveOnMouseWheel: true, // 开启滚轮平移
+            moveOnMouseMove: false  // 鼠标移动能触发数据窗口平移
+          }
+
+    //1.实例化对象
+    var myChart = echarts.init(document.querySelector('.bar .chart'));
+    //2.指定配置项和数据
+  var option = {
+      dataZoom:zoomData,
+
+  tooltip: {
+    trigger: 'axis',
+      formatter: '{b} <br/> {a}:{c}次',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  grid: {
+    left: '5%',
+    right: '0%',
+    bottom: '3%',
+    containLabel: true
+  },
+
+  xAxis: [
+    {
+      type: 'category',
+      data: {{ univName|tojson }},
+      axisTick: {
+        alignWithLabel: true
+      },
+        axisLabel: {
+          color:"#fff",
+            //x轴文字的配置
+            show: true,
+            interval: 0,
+            rotate:45,//使x轴文字显示全
+            textStyle:{
+                fontSize:"15"
+            }
+           }
+    }
+  ],
+  yAxis: [
+    {
+        minInterval: 1,
+      type: 'value',
+        axisLabel: {
+          color: "#fff",
+          fontSize: "15"
+        },
+    }
+  ],
+  series: [
+    {
+    color:"#e00522",
+      name: '累计发生',
+      type: 'bar',
+      barWidth: '60%',
+      data: {{ count|tojson }},
+        itemStyle: {
+                // 修改柱子圆角
+                barBorderRadius: 2,
+              }
+    }
+  ]};
+      //3.把配置项给实例对象
+      myChart.setOption(option);
+      //4.让图表跟随屏幕自适应
+      window.addEventListener("resize", function() {
+        myChart.resize();
+      });
+})();
+}
+//折线图
+(function(){
+  var myChart = echarts.init(document.querySelector('.line .chart'));
+  var data=[
+      {
+          color:'#3477fd',
+          name:"受骗金额",
+          data:{{ money|tojson }},
+          formatter: '{b} <br/> {a}:{c}元',
+          areaStyle:{
+          // 渐变色
+        color: new echarts.graphic.LinearGradient(
+          0,
+          0,
+          0,
+          1,
+          [
+            {
+              offset: 0,
+              color: "rgba(1, 132, 213, 0.9)"   // 渐变色的起始颜色
+            },
+            {
+              offset: 0.8,
+              color: "rgba(1, 132, 213, 0.5)"   // 渐变线的结束颜色
+            }
+          ],
+          false
+        ),
+        shadowColor: "rgba(0, 0, 0, 0.1)"
+      }
+      },
+      {
+          color:"#e00522",
+          name:"案件发生",
+          data:{{ count1|tojson }},
+          formatter: '{b} <br/> {a}:{c}件',
+          areaStyle: {
+          // 渐变色
+        color: new echarts.graphic.LinearGradient(
+          0,
+          0,
+          0,
+          1,
+          [
+            {
+              offset: 0,
+              color: "rgba(255, 0, 0,0.9)"   // 渐变色的起始颜色
+            },
+            {
+              offset: 0.8,
+              color: "rgba(255,0,0,0.5)"   // 渐变线的结束颜色
+            }
+          ],
+          false
+        ),
+        shadowColor: "rgba(0, 0, 0, 0.1)"
+      }
+      }
+  ]
+  option1 = {
+    tooltip: {
+      trigger: 'axis',
+        formatter: data[0].formatter
+    },
+    legend: {
+      top:"0%",
+      textStyle:{
+        color: "#fff",
+        fontSize: "15"
+      }
+    },
+
+    grid: {
+      left: "12",
+      top: "30",
+      right: "12",
+      bottom: "10",
+      containLabel: true
+    },
+    xAxis: [
+      {
+        type: 'category',
+        boundaryGap: false,
+        data: {{month|tojson}},
+        axisLabel: {
+          textStyle: {
+            color: "#fff",
+            fontSize: 12
+          }
+        },
+         // x轴线的颜色为   rgba(255,255,255,.2)
+        axisLine: {
+          lineStyle: {
+            color: "rgba(255,255,255,.4)"
+          }
+        },
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        axisTick: { show: false },
+        axisLine: {
+          lineStyle: {
+            color: "rgba(255,255,255,.5)"
+          }
+        },
+        axisLabel: {
+          textStyle: {
+            color: "#fff",
+            fontSize: 12
+          }
+        },
+	   // 修改分割线的颜色
+        splitLine: {
+          lineStyle: {
+            color: "rgba(255,255,255,.4)"
+          }
+        }
+      }
+    ],
+    series:
+      {
+        name: data[0].name,
+        type: 'line',
+        smooth:true,
+        lineStyle:{
+          //单独修改当前线条的样式
+          color:data[0].color,
+          width:'2'
+
+        },
+         // 填充区域
+         areaStyle: {
+          // 渐变色，只需要复制即可
+        color: new echarts.graphic.LinearGradient(
+          0,
+          0,
+          0,
+          1,
+          [
+            {
+              offset: 0,
+              color: "rgba(1, 132, 213, 0.9)"   // 渐变色的起始颜色
+            },
+            {
+              offset: 0.8,
+              color: "rgba(1, 132, 213, 0.5)"   // 渐变线的结束颜色
+            }
+          ],
+          false
+        ),
+        shadowColor: "rgba(0, 0, 0, 0.1)"
+      },
+      //设置拐点
+        symbol:"circle",
+        // 拐点大小
+        symbolSize:8,
+        // 开始不显示拐点， 鼠标经过显示
+        showSymbol: false,
+        // 设置拐点颜色以及边框
+       itemStyle: {
+        color: "#3477fd",
+        borderColor: "rgba(221, 220, 107, .1)",
+        borderWidth: 12
+    },
+        emphasis: {
+          focus: 'series'
+        },
+        data: data[0].data,
+      },
+
+  };
+  myChart.setOption(option1);
+  //4.让图表跟随屏幕自适应
+  window.addEventListener("resize", function() {
+    myChart.resize();
+  });
+  $(".line h2").on("click", "a", function() {
+    // alert(1);
+    // console.log($(this).index());
+    // 点击 a 之后 根据当前a的索引号 找到对应的 yearData的相关对象
+    // console.log(yearData[$(this).index()]);
+    var obj = data[$(this).index()];
+    option1.series.data = obj.data;
+    option1.series.lineStyle.color = obj.color;
+    option1.series.name = obj.name;
+    option1.series.areaStyle = obj.areaStyle;
+    option1.series.itemStyle.color = obj.color;
+    option1.tooltip.formatter=obj.formatter;
+
+    // 需要重新渲染
+      myChart.setOption(option1);
+  });
+
+})();
+//top5
+if(pie==="1"){
+    //top5样式2
+    (function(){
+  var myChart = echarts.init(document.querySelector(".pie .chart"));
+  option = {
+    color: ['#006cff', '#60cda0', '#ed8884', '#ff9f7f', '#0096ff'],
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b} : {c}件 ({d}%)'
+    },
+    legend: {
+      bottom:'0%',
+      itemWidth:10,
+      itemHeight:10,
+      textStyle: {
+        color: "rgba(255,255,255,.5)",
+        fontSize: "12"}
+    },
+
+    series: [
+      {
+        name: '案件类型',
+        type: 'pie',
+        label:{
+          fontSize: 20
+      },
+       // 引导线调整
+      labelLine: {
+         // 连接扇形图线长
+          length: 6,
+          // 连接文字线长
+         length2: 8
+       } ,
+        itemStyle: {
+          borderRadius: 5
+        },
+        data:{{ dict1|tojson }}
+      }
+    ]
+  };
+  myChart.setOption(option);
+  // 监听浏览器缩放，图表对象调用缩放resize函数
+window.addEventListener("resize", function() {
+  myChart.resize();
+});
+})();
+}else{
+    //top5 样式1
+    (function(){
+  var myChart = echarts.init(document.querySelector(".pie .chart"));
+  option = {
+    color: ['#006cff', '#60cda0', '#ed8884', '#ff9f7f', '#0096ff'],
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b} : {c}件 ({d}%)'
+    },
+    legend: {
+      bottom:'0%',
+      itemWidth:10,
+      itemHeight:10,
+      textStyle: {
+        color: "rgba(255,255,255,.5)",
+        fontSize: "12"}
+    },
+
+    series: [
+      {
+        name: '案件类型',
+        type: 'pie',
+        radius: ['10%', '70%'],
+        center: ['50%', '50%'],
+        roseType: 'radius',
+        label:{
+          fontSize: 20
+      },
+       // 引导线调整
+      labelLine: {
+         // 连接扇形图线长
+          length: 6,
+          // 连接文字线长
+         length2: 8
+       } ,
+        itemStyle: {
+          borderRadius: 5
+        },
+        data:{{ dict1|tojson }}
+      }
+    ]
+  };
+  myChart.setOption(option);
+  // 监听浏览器缩放，图表对象调用缩放resize函数
+window.addEventListener("resize", function() {
+  myChart.resize();
+});
+})();
+}
+//top10
+(function() {
+  var myColor = ["#e00522","#3477fd","#1089E7", "#F57474", "#56D0E3", "#F8B448", "#8B78F6",'#8B0000','#D2691E',"green"];
+  // 1. 实例化对象
+  var myChart = echarts.init(document.querySelector(".bar2 .chart"));
+  // 2. 指定配置和数据
+  var option = {
+    grid: {
+      top: "5%",
+      left: "30%",
+      bottom: "10%",
+        right:"20%"
+      // containLabel: true
+    },
+    // 不显示x轴的相关信息
+    xAxis: {
+      show: false
+    },
+    yAxis: [
+      {
+        type: "category",
+        inverse: true,
+        data: {{ names|tojson }},
+        // 不显示y轴的线
+        axisLine: {
+          show: false
+        },
+        // 不显示刻度
+        axisTick: {
+          show: false
+        },
+        // 把刻度标签里面的文字颜色设置为白色
+        axisLabel: {
+          color: "#fff"
+        }
+      },
+      {
+        data: {{ schoolMoney|tojson }},
+        inverse: true,
+        // 不显示y轴的线
+        axisLine: {
+          show: false
+        },
+        // 不显示刻度
+        axisTick: {
+          show: false
+        },
+        // 把刻度标签里面的文字颜色设置为白色
+        axisLabel: {
+          color: "#fff"
+        }
+      }
+    ],
+    series: [
+      {
+        name: "条",
+        type: "bar",
+        data: {{ num|tojson }},
+        yAxisIndex: 0,
+        // 修改第一组柱子的圆角
+        itemStyle: {
+          barBorderRadius: 20,
+          // 此时的color 可以修改柱子的颜色
+          color: function(params) {
+            // params 传进来的是柱子对象
+            // console.log(params);
+            // dataIndex 是当前柱子的索引号
+            return myColor[params.dataIndex];
+          }
+        },
+        // 柱子之间的距离
+        barCategoryGap: 50,
+        //柱子的宽度
+        barWidth: 10,
+        // 显示柱子内的文字
+        label: {
+          show: true,
+          position: "inside",
+          // {c} 会自动的解析为 数据  data里面的数据
+          formatter: "{c}%"
+        }
+      },
+      {
+        name: "框",
+        type: "bar",
+        barCategoryGap: 50,
+        barWidth: 15,
+        yAxisIndex: 1,
+        data: [100,100,100,100,100,100,100,100,100,100],
+        itemStyle: {
+          color: "none",
+          borderColor: "#00c1de",
+          borderWidth: 3,
+          barBorderRadius: 15
+        }
+      }
+    ]
+  };
+
+  // 3. 把配置给实例对象
+  myChart.setOption(option);
+  // 4. 让图表跟随屏幕自动的去适应
+  window.addEventListener("resize", function() {
+    myChart.resize();
+  });
+})();
+//案件类型
+(function() {
+  var myChart = echarts.init(document.querySelector(".box2 .chart"));
+  let legendData = {{ fraudways|tojson }};
+  var option = {
+      color: ['#006cff', '#60cda0', '#ed8884', '#ff9f7f', '#0096ff', '#9fe6b8', '#32c5e9', '#1d9dff','#FFB6C1','#C71585',
+        '#6A5ACD','#F5F5DC','#8B0000','#D2691E','#FAEBD7','#D4F2E7','#4169E1','#B22222','#EEE8AA','#FFFACD'],
+  tooltip: {
+    trigger: 'item',
+    formatter: '{a} <br/>{b}: {c}元 ({d}%)'
+  },
+
+  legend: [
+      {
+      icon:'bar',
+      textStyle: {
+        color: "rgba(255,255,255,)",
+        fontSize: "12"
+      },
+    data: legendData.slice(0,{{ first|tojson }}),
+          top:"20%",
+      orient:"vertical",
+          x:"left"
+  },
+      {
+          icon:'bar',
+    textStyle: {
+        color: "rgba(255,255,255,)",
+        fontSize: "12"
+    },
+        data: legendData.slice({{ first|tojson }},{{ first|tojson }}+{{ second|tojson }}),
+          top:"20%",
+         orient:"vertical",
+          x:"right"
+      }
+  ],
+  series: [
+    {
+      name: '案件类型',
+      type: 'pie',
+      selectedMode: 'single',
+      radius: ['10%', '40%'],
+      label: {
+        show:false
+      },
+      labelLine: {
+        show: false
+      },
+      data:
+          {{ dict3|tojson}}
+
+    },
+    {
+      name: '案件类型',
+      type: 'pie',
+      radius: ['55%', '80%'],
+      labelLine: {
+        show: false
+      },
+        label:{
+          show:false
+          },
+      data:
+          {{ dict2|tojson }}
+
+    }
+  ]
+};
+  myChart.setOption(option);
+  // 监听浏览器缩放，图表对象调用缩放resize函数
+  window.addEventListener("resize", function() {
+    myChart.resize();
+  });
+})();
+
+
+</script>
+</body>
+</html>

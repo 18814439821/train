@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台图表管理页</title>
+    <link  rel="stylesheet" href="../static/css/chartManagePage.css">
+    <script src="../static/js/echarts.min.js"></script>
+    <script src="../static/js/flexible.js"></script>
+    <script src="../static/js/jquery.js"></script>
+    <script type="text/javascript">
+            function showMessage(){
+                let message = document.getElementById('dialogMessage');
+                if (message.style.opacity=='0'){
+                    message.style.width='800px'
+                    message.style.height='500px'
+                    message.style.opacity='1';
+                }else{
+                    message.style.width='0'
+                    message.style.height='0'
+                    message.style.opacity='0';
+                }
+            }
+
+            function update(){
+                const form=document.getElementById("form")
+
+                const data = new FormData(form);
+                const cookies = data.get('cookies');
+                const url = data.get('url');
+                const referer = data.get('referer');
+                if (cookies==='' || url=== '' || referer === ''){
+                    document.getElementById("errMsg").textContent='输入有误';
+                    return 0
+                }
+                var xmlhttp=new XMLHttpRequest();
+                xmlhttp.open("POST","/update");
+                xmlhttp.send(data)
+
+            }
+    </script>
+</head>
+
+<body>
+     <header>
+         <h1>
+            <a href="/" class="a2">首页</a>
+            <a href="/alldata" class="a2">反诈分享</a>
+            <a href="/admin" class="a2">管理后台</a>
+             <a class="a2" onclick="showMessage()">更新数据</a>
+            <a class="a3">高校警情-后台图表管理</a>
+        </h1>
+    </header>
+    <section>
+        <div id="central-box">
+            <ul>
+                <div>
+
+                            <li>
+                                <label>各高校诈骗案件发生情况排行柱状图</label>
+                                <div>
+                                    <div class="btn">
+                                        <input type="button" class="button" id="button1" name="btn1" value="横向柱状图">
+                                        <input type="button" class="button" id="button2" name="btn2" value="纵向柱状图">
+                                    </div>
+                                    <div class="graph">
+                                        <img id="bar1" src="../static/images/bar1.png" style="display: block;">
+                                        <img id="bar2" src="../static/images/bar2.png" style="display: none;">
+                                    </div>
+                                </div>
+                            </li>
+
+
+                            <li>
+                                <label>诈骗案件-TOP5-饼图</label>
+                                <div>
+                                    <div class="btn">
+                                        <input type="button" class="button" id="button3" name="btn3" value="饼图1">
+                                        <input type="button" class="button" id="button4" name="btn4" value="饼图2">
+                                    </div>
+                                    <div class="graph">
+                                        <img id="pie1" src="../static/images/pie1.png" style="display: block;">
+                                        <img id="pie2" src="../static/images/pie2.png" style="display: none;">
+                                    </div>
+                                </div>
+                            </li>
+
+                </div>
+            </ul>
+
+        </div>
+    </section>
+     <script type="text/javascript">
+
+         let bar1=document.getElementById("bar1")
+         let bar2=document.getElementById("bar2")
+         let pie1=document.getElementById("pie1")
+         let pie2=document.getElementById("pie2")
+         if(sessionStorage.getItem("bar")==="1"){
+                bar1.style.display='none';
+                bar2.style.display='none';
+                bar2.style.display='block';
+         }
+         if(sessionStorage.getItem("pie")==="1"){
+                pie1.style.display='none';
+                pie2.style.display='none';
+                pie2.style.display='block';
+         }
+
+            document.getElementById("button1").onclick=function (){
+                bar1.style.display='none';
+                bar2.style.display='none';
+                bar1.style.display='block';
+                sessionStorage.setItem("bar","0");
+            }
+            document.getElementById("button2").onclick=function (){
+                bar1.style.display='none';
+                bar2.style.display='none';
+                bar2.style.display='block';
+                sessionStorage.setItem("bar","1");
+            }
+            document.getElementById("button3").onclick=function (){
+                pie1.style.display='none';
+                pie2.style.display='none';
+                pie1.style.display='block';
+                sessionStorage.setItem("pie","0");
+            }
+            document.getElementById("button4").onclick=function (){
+                pie1.style.display='none';
+                pie2.style.display='none';
+                pie2.style.display='block';
+                sessionStorage.setItem("pie","1");
+            }
+
+     </script>
+     <div id="dialogMessage" style="opacity: 0;width: 0px;height: 0px;">
+        <form id="form">
+            <div id="x" onclick="showMessage()">X</div>
+            <label>请输入必要的参数</label>
+            <div><div>Cookies:</div><input type="text" name="cookies" id="cookies"></div>
+            <div><div>Url:</div><input type="text" name="url" id="url"></div>
+            <div><div>referer:</div><input type="text" name="referer" id="referer"></div>
+            <input type="button" value="提交" onclick="update()">
+            <div><span id="errMsg"></span></div>
+        </form>
+    </div>
+</body>
+</html>

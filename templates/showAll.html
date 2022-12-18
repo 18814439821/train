@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高校警情-全数据</title>
+    <link rel="stylesheet" href="../static/css/showAll.css">
+</head>
+<body>
+<script src="../static/js/echarts.min.js"></script>
+<script src="../static/js/flexible.js"></script>
+<script src="../static/js/jquery.js"></script>
+    <header>
+        <h1>
+            <a href="/" class="a2">首页</a>
+            <a href="/alldata" class="a2">反诈分享</a>
+            <a href="/admin" class="a2">管理后台</a>
+            <a class="a3">高校警情-反诈分享</a>
+        </h1>
+        <div class="showTime">数据最后更新时间：{{ lasttime }}</div>
+        <div class="showData">数据来源:广州天河公安微信公众号</div>
+    </header>
+    <section class="mainbox">
+        <div class="box">
+            <div class="left">
+                <table>
+                    <thead>
+                        <h2 class="h1" style="margin-top:10px;color: #fff;">总数据</h2>
+                    </thead>
+                    <tbody>
+                        {% for data in alldata %}
+                        <tr>
+                            <td class="h2">{{ data.data }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+                 文字自动滚动#}
+                 <script>
+                    var scroll = setInterval('autoScroll(".left")', 500); // 时间越小速度越快
+			        // 鼠标移上去取消事件
+			        $(".left").hover(function() {
+			            clearInterval(scroll);
+			        }, function() {
+			            clearInterval(scroll);
+			            scroll = setInterval('autoScroll(".left")', 500);
+			        })
+
+			   	    function autoScroll(obj) {
+			            $(obj).find("tbody:first").animate({
+			                marginTop: "-10px"
+			            }, 10, function () {
+			                $(this).css({
+			                    marginTop: "0px"
+			                }).find("tr:first").appendTo(this); //将该行的margin值置零,然后插入到最后
+			            })
+			        }
+                    </script>
+            </div>
+            <div class="right">
+
+                <h1 class="h1" style="margin-top:10px;color: #fff;">常见诈骗方式-应对方法</h1>
+                <div class="r1">
+                    <div class="d1"><a href="https://www.thepaper.cn/newsDetail_forward_4895573" class="a1">中奖</a></div>
+                    <div class="d1"><a href="https://baijiahao.baidu.com/s?id=1699969009302659195" class="a1">交友婚介</a></div>
+                    <div class="d1"><a href="http://news.jstv.com/a/20220929/e9ee9de50298474d91b3650908dbe720.shtml" class="a1">代办证件发票</a></div>
+                    <div class="d1"><a href="http://www.qinghai.gov.cn/msfw/system/2022/12/08/010422892.shtml" class="a1">代办贷款</a></div>
+                    <div class="d1"><a href="https://www.thepaper.cn/newsDetail_forward_19975639" class="a1">冒充公检法</a></div>
+                    <div class="d1"><a href="https://m.thepaper.cn/baijiahao_19569010" class="a1">冒充客服</a></div>
+                    <div class="d1"><a href="https://www.cqn.com.cn/ms/content/2020-05/26/content_8606828.htm" class="a1">刷单兼职</a></div>
+                    <div class="d1"><a href="https://anquan.baidu.com/article/1132" class="a1">引诱性网址链接</a></div>
+                    <div class="d1"><a href="https://www.thepaper.cn/newsDetail_forward_19909281" class="a1">投资理财</a></div>
+                    <div class="d1"><a href="https://www.creditchina.gov.cn/home/zhuantizhuanlan/fengxiantishi/zuijinfengxiantishi/202202/t20220224_288607.html" class="a1">招聘求职</a></div>
+                    <div class="d1"><a href="https://www.163.com/dy/article/GI3PNUB205198SDK.html" class="a1">提供虚假租房服务</a></div>
+                    <div class="d1"><a href="http://gjj.gzlps.gov.cn/ztzl/pfzsxc/202202/t20220216_72567648.html#:~:text=%E2%80%9C%E6%9D%80%E7%8C%AA%E7%9B%98%E2%80%9D%E8%AF%88%E9%AA%97%E6%98%AF,%E5%B1%95%E6%84%9F%E6%83%85%E5%8F%96%E5%BE%97%E4%BF%A1%E4%BB%BB%E3%80%82" class="a1">杀猪盘</a></div>
+                    <div class="d1"><a href="http://tjj.gzlps.gov.cn/gzdt_42918/tzgg_42920/202208/t20220810_76053002.html" class="a1">虚假征信</a></div>
+                    <div class="d1"><a href="https://baijiahao.baidu.com/s?id=1707245206727010871" class="a1">虚假服务</a></div>
+                    <div class="d1"><a href="http://www.leda.gov.cn/info/1553/193083.htm" class="a1">虚假购物</a></div>
+                    <div class="d1"><a href="https://www.thepaper.cn/newsDetail_forward_13086079" class="a1">违法互联网服务</a></div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+</body>
+</html>

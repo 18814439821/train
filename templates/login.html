@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆</title>
+    <link  rel="stylesheet" href="../static/css/login.css">
+    <script src="../static/js/echarts.min.js"></script>
+    <script src="../static/js/flexible.js"></script>
+    <script src="../static/js/jquery.js"></script>
+
+</head>
+<body>
+    <header>
+         <h1>
+            <a href="/" class="a2">首页</a>
+            <a href="/alldata" class="a2">反诈分享</a>
+            <a href="/admin" class="a2">管理后台</a>
+            <a class="a3">高校警情-管理员登陆</a>
+        </h1>
+    </header>
+    <section >
+        <div id="central-box">
+
+                <form id="form" action="/login" method="post">
+                    <label style="font-size:0.6rem">用户登录</label>
+                    <div><div style="width:100%;text-align:left;font-size: 0.3rem">用户:</div>
+                    <input type="text" id="username" name="username"><div id="username-error" class="error"></div></div>
+                    <div>
+                        <div style="width:100%;text-align:left;font-size: 0.3rem">密码:</div>
+                    <input type="password" id="password" name="password"><div id="password-error" class="error">{{ errMsg }}</div>
+                    </div>
+                    <input type="submit" value="提交">
+                </form>
+        </div>
+    </section>
+{# <script>#}
+{#  document.getElementById('form').addEventListener('submit', function(event) {#}
+{#    event.preventDefault();#}
+{##}
+{#    // 获取表单数据#}
+{#    var formData = new FormData(this);#}
+{#    var username = formData.get('username');#}
+{#    var password = formData.get('password');#}
+{##}
+{#    // 验证表单数据#}
+{#    var formValid = true;#}
+{#    if (username.length < 3) {#}
+{#      document.getElementById('username-error').textContent = '用户名至少字符长度为3';#}
+{#      formValid = false;#}
+{#    } else {#}
+{#      document.getElementById('username-error').textContent = '';#}
+{#    }#}
+{#    if (password.length < 6) {#}
+{#      document.getElementById('password-error').textContent = '用户名至少字符长度为6';#}
+{#      formValid = false;#}
+{#    } else {#}
+{#      document.getElementById('password-error').textContent = '';#}
+{#    }#}
+{##}
+{#    if (formValid) {#}
+{#      // 发送请求#}
+{#      var xhr = new XMLHttpRequest();#}
+{#      xhr.open('POST', '/login', true);#}
+{#      xhr.send(formData);#}
+{#    }#}
+{#  });#}
+{#</script>#}
+</body>
+</html>

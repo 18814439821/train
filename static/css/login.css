@@ -1,0 +1,101 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+li {
+  list-style: none;
+}
+/* 声明字体*/
+@font-face {
+  font-family: electronicFont;
+  src: url(../font/DS-DIGIT.TTF);
+}
+body {
+    background: url(../images/bg1.png) no-repeat top center;
+    line-height: 1.15;
+}
+header {
+  position: relative;
+  height: 1.25rem;
+  background: url(../images/head_bg1.jpg) no-repeat;
+  background-size: 100% 100%;
+}
+header h1 {
+  font-size: 0.475rem;
+  color: #fff;
+  text-align: center;
+  line-height: 1rem;
+}
+body section{
+  max-width: 1920px;
+  margin: 0 auto;
+}
+#central-box{
+  max-width: 100%;
+  min-width: 500px;
+  margin: 0 auto;
+}
+header h1 a {
+  text-decoration: none;
+  color: #fff;
+  float: left;
+  font-size: 0.235px;
+  translate: 30px 4px;
+}
+.a2{
+    margin-right:0.25rem;
+    font-size:0.3125rem;
+}
+.a3{
+    font-size: 0.475rem;
+    color: #fff;
+    margin-left:5.43rem;
+    line-height: 1rem;
+}
+body section{
+  max-width: 1920px;
+  margin: 0 auto;
+}
+#central-box{
+  max-width: 100%;
+  min-width: 500px;
+  margin: 0 auto;
+}
+#central-box {
+  width: 16rem;
+  min-height: 10rem;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  box-shadow:inset 0 0 6px rgba(255, 255, 255, 0.2);
+  justify-content: center;
+  align-items: center;
+}
+form{
+  width: 10rem;
+  height: 7rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  color: aliceblue;
+}
+input{
+    outline-style: none ;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 13px 14px;
+    width: 620px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: "Microsoft soft";
+}
+  .error {
+        color: red;
+        font-size: 0.2rem;
+  }

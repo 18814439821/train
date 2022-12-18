@@ -1,0 +1,210 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+li {
+  list-style: none;
+}
+/* 声明字体*/
+@font-face {
+  font-family: electronicFont;
+  src: url(../font/DS-DIGIT.TTF);
+}
+body {
+    background: url(../images/bg1.png) no-repeat top center;
+    line-height: 1.15;
+}
+header {
+  position: relative;
+  height: 1.25rem;
+  background: url(../images/head_bg1.jpg) no-repeat;
+  background-size: 100% 100%;
+}
+header h1 {
+  font-size: 0.475rem;
+  color: #fff;
+  text-align: center;
+  line-height: 1rem;
+}
+body section{
+  max-width: 1920px;
+  margin: 0 auto;
+}
+#central-box{
+  max-width: 100%;
+  min-width: 500px;
+  margin: 0 auto;
+}
+#central-box ul{
+  width: 1600px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  box-shadow:inset 0 0 6px rgba(255, 255, 255, 0.2);
+}
+#central-box ul div li{
+  height: 400px;
+  width: 800px;
+  display: flex;
+  flex-direction: column;
+  border-bottom:1px rgba(255, 255, 255,0.2) solid;
+}
+#central-box ul li label{
+  flex: 1;
+  line-height: 100%;
+  font-size: 0.3rem;;
+  color: aliceblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#central-box ul div {
+  flex: 1;
+  display: flex;
+    flex-direction: row;
+}
+#central-box ul li div{
+  flex: 5;
+  display: flex;
+}
+
+#central-box ul li div .btn{
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+}
+.btn input{
+  flex: 1;
+  text-align: center;
+}
+#central-box ul li div .graph{
+  flex: 4;
+}
+
+/* General Buttons */
+.button {
+  width: 340px;
+  height: 40px;
+  background: linear-gradient(to bottom, #468fb1 0%,#296c91 100%);
+  border: none;
+  border-radius: 5px;
+  position: relative;
+  border-bottom: 4px solid #173344;
+  color: #fbfbfb;
+  font-weight: 600;
+  font-family: 'Open Sans', sans-serif;
+  text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+  font-size: 15px;
+  text-align: left;
+  text-indent: 5px;
+  box-shadow: 0px 3px 0px 0px rgba(0,0,0,.2);
+  cursor: pointer;
+
+/* Just for presentation */
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+.button:active {
+  box-shadow: 0px 2px 0px 0px rgba(0,0,0,.2);
+  top: 1px;
+}
+
+.button:after {
+  content: "";
+  width: 0;
+  height: 0;
+  display: block;
+  border-top: 20px solid #187dbc;
+  border-bottom: 20px solid #187dbc;
+  border-left: 16px solid transparent;
+  border-right: 20px solid #187dbc;
+  position: absolute;
+  opacity: 0.6;
+  right: 0;
+  top: 0;
+  border-radius: 0 5px 5px 0;
+}
+header h1 a {
+  text-decoration: none;
+  color: #fff;
+  float: left;
+  font-size: 0.235px;
+  translate: 30px 4px;
+}
+.a2{
+    margin-right:0.25rem;
+    font-size:0.3125rem;
+}
+.a3{
+    font-size: 0.475rem;
+    color: #fff;
+    margin-left:3.9rem;
+    line-height: 1rem;
+}
+#dialogMessage{
+
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  box-shadow:inset 0 0 6px rgba(255, 255, 255, 0.2);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -250px 0 0 -400px;
+  transition:0.5s;
+}
+#dialogMessage form{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+#dialogMessage form label{
+  line-height:60px;
+  font-size: 30px;
+  color: white;
+}
+#dialogMessage form div div{
+  color: white;
+  font-size: 15px;
+  width: 100px;
+}
+#dialogMessage form div input{
+  height: 30px;
+  width: 200px;
+  border: 0;
+}
+#dialogMessage form input{
+  height: 30px;
+  width: 100px;
+  border: 0;
+}
+#x{
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  font-size: 50px;
+  color: white;
+  text-align: center;
+  transform: translateX(350px) translateY(-200px);
+  position: absolute;
+}
+#errMsg{
+  color: red;
+}
+img{
+  height: 100%;
+  width: 100%;
+}
