@@ -100,12 +100,6 @@ class AllData(db.Model):
 
 @app.route("/")
 def query_datas():
-    # 1.get查找:根据主键查找
-    # user = User.query.get(1)
-    # print(f"{user.id}:{user.username}-{user.password}")
-    # 2.filter_by查找
-    # Query:类数组
-
     # 查新增表
     tempdata = FraudDataTemp.query.all()
     # 查最后更新时间 并比较
@@ -117,48 +111,54 @@ def query_datas():
             lasttime = temptime
     lasttime = lasttime.strftime("%Y-%m-%d %H:%M:%S")
 
-    # 学校名称 案件次数
-    univName = []
-    count = []
-
+    # 柱状图 图表所需数据
+    univName = []  # 学校名称
+    count = []  # 案件发生次数
+    univName_copy = []  # 学校名称
+    count_copy = []  # 案件发生次数
     data1 = UnivCount.query.order_by(UnivCount.count.desc()).all()
-    data11 = UnivCount.query.order_by(UnivCount.money.desc()).limit(10).all()
+    data1_copy = UnivCount.query.order_by(UnivCount.count.asc()).all()
     for data in data1:
         univName.append(data.univName)
         count.append(data.count)
+    for data_copy in data1_copy:
+        univName_copy.append(data_copy.univName)
+        count_copy.append(data_copy.count)
 
-    # 发生月份 月份诈骗金额
-    month = []
-    money = []
-    count1 = []
+    # 折线图 所需数据
+    month = []  # 发生月份
+    money = []  # 月份诈骗金额
+    monthcount = []  # 该月案件发生次数
     data2 = MonthMoney.query.all()
-    for tdata in data2:
-        month.append(tdata.month)
-        money.append(tdata.money)
-        count1.append(tdata.count)
-    # 案件类型 发生次数
-    fraudway = []
-    tcount = []
-    data3 = FraudWayCount.query.order_by(FraudWayCount.count.desc()).limit(5).all()
+    for data_line in data2:
+        month.append(data_line.month)
+        money.append(data_line.money)
+        monthcount.append(data_line.count)
 
-    for sdata in data3:
-        fraudway.append(sdata.fraudway)
-        tcount.append(sdata.count)
+    # top5 所需数据
+    fraudway = []  # 案件名称
+    top5count = []  # 每种案件发生次数
+    data3 = FraudWayCount.query.order_by(FraudWayCount.count.desc()).limit(5).all()  # 取数据库案件类型次数最多的前5种
+
+    for data_top5 in data3:
+        fraudway.append(data_top5.fraudway)
+        top5count.append(data_top5.count)
+        # 因为饼图需要的数据是键值对 所以将列表转为dataFrame再转键值对
     df = pd.DataFrame({
         'name': fraudway,
-        'value': tcount
+        'value': top5count
     })
-    dict1 = df.to_dict(orient="records")
+    top5_dict = df.to_dict(orient="records")  # top5的字典
 
-    # 学校名称 发生次数 金额
-    names = []
-    schoolMoney = []
-    sum = []
-    for moneyData in data11:
-        names.append(moneyData.univName)
-        schoolMoney.append(moneyData.money)
-        sum.append(moneyData.count)
+    # top10排行榜
+    names = []  # 学校名称
+    schoolMoney = []  # 各个学校所被骗金额
+    data4 = UnivCount.query.order_by(UnivCount.money.desc()).limit(10).all()  # 取数据库金额前10的数据
+    for data_top10 in data4:
+        names.append(data_top10.univName)
+        schoolMoney.append(data_top10.money)
 
+    # 求百分比 100%为金额最高的学校 其余学校去除第一名的学校后乘百分比
     j = 0
     for i in schoolMoney:
         if i > j:
@@ -168,44 +168,44 @@ def query_datas():
         x = (round(i / j, 2)) * 100
         num.append(x)
 
-    # 查询数据表一共有多少种案件类型
-    fraudwaySum = db.session.query(FraudWayCount.fraudway).count()
-    first = 0
-    second = 0
-    if (fraudwaySum % 2 == 0):
+    # 查询数据表一共有多少种案件类型  中间的环形图所需数据
+    fraudwaySum = db.session.query(FraudWayCount.fraudway).count()  # 查询出数据库中所有的案件类型
+    first = 0  # 定义外边的图一共有多少种类型
+    second = 0  # 定义内边的图一共有多少类型
+    if fraudwaySum % 2 == 0:
         first = second = fraudwaySum // 2
     else:
         first = (fraudwaySum // 2) + 1
         second = fraudwaySum // 2
 
-    # 案件类型 发生次数 金额 前十条 假设20种类型
-    fraudway2 = []
-    moneycount = []
-    fraudways = []
-    data33 = FraudWayCount.query.order_by(FraudWayCount.money.desc()).limit(first).all()
-    for wdata in data33:
-        fraudway2.append(wdata.fraudway)
-        moneycount.append(wdata.money)
-        fraudways.append(wdata.fraudway)
-    df = pd.DataFrame({
+    # 案件类型 发生次数 金额 前十条 假设20种类型 21种就是 前11条
+    fraudway2 = []  # 案件类型
+    moneycount = []  # 每种案件对应的被骗金额
+    fraudways = []  # 记录案件类型名称 来制作前端图例
+    data5 = FraudWayCount.query.order_by(FraudWayCount.money.desc()).limit(first).all()
+    for firstdata in data5:
+        fraudway2.append(firstdata.fraudway)
+        moneycount.append(firstdata.money)
+        fraudways.append(firstdata.fraudway)
+    df2 = pd.DataFrame({
         'name': fraudway2,
         'value': moneycount
     })
-    dict2 = df.to_dict(orient="records")
+    first_dict = df2.to_dict(orient="records")  # 外环的字典
 
     # 案件类型 发生次数 金额 后十条 假设20种类型
-    fraudway3 = []
-    moneycount2 = []
-    data44 = FraudWayCount.query.order_by(FraudWayCount.money.asc()).limit(second).all()
-    for qdata in data44:
-        fraudway3.append(qdata.fraudway)
-        moneycount2.append(qdata.money)
-        fraudways.append(qdata.fraudway)
-    df = pd.DataFrame({
+    fraudway3 = []  # 案件类型
+    moneycount2 = []  # 金额
+    data6 = FraudWayCount.query.order_by(FraudWayCount.money.asc()).limit(second).all()  # 查出内环数据
+    for seconddata in data6:
+        fraudway3.append(seconddata.fraudway)
+        moneycount2.append(seconddata.money)
+        fraudways.append(seconddata.fraudway)
+    df3 = pd.DataFrame({
         'name': fraudway3,
         'value': moneycount2
     })
-    dict3 = df.to_dict(orient="records")
+    second_dict = df3.to_dict(orient="records")  # 内环字典
 
     # hide隐藏框
     today = datetime.datetime.today()
@@ -220,29 +220,29 @@ def query_datas():
     hidefraud = []  # 案件类型
     hidecount = []  # 案件发生次数
     hidemoney = []  # 案件类型对应的金额
-    data5 = db.session.query(FraudData.fraudWay, func.count(FraudData.fraudWay), FraudData.money).filter_by(
+    data7 = db.session.query(FraudData.fraudWay, func.count(FraudData.fraudWay), FraudData.money).filter_by(
         month=newmonth).group_by(
         FraudData.fraudWay).order_by(func.count(FraudData.fraudWay).desc()).all()
-    for hdata in data5:
+    for hdata in data7:
         hidefraud.append(hdata.fraudWay)
         hidecount.append(hdata[1])
         monthfraudcount += hdata[1]
         moneyfraudcount += hdata.money
         hidemoney.append(hdata.money)
-    df2 = pd.DataFrame({
+    df4 = pd.DataFrame({
         'name': hidefraud,
         'value': hidemoney
     })
-    dict4 = df2.to_dict(orient="records")
+    hide_dict = df4.to_dict(orient="records")
 
     return render_template("index.html",
-                           count=count, univName=univName,
-                           month=month, money=money, count1=count1,
-                           dict1=dict1,
-                           schoolMoney=schoolMoney, names=names, sum=sum, num=num,
-                           dict2=dict2, dict3=dict3, fraudways=fraudways, first=first, second=second,
-                           hidefraud=hidefraud, hidecount=hidecount, monthfraudcount=monthfraudcount,
-                           moneyfraudcount=moneyfraudcount, dict4=dict4,
+                           count=count, univName=univName, univName_copy=univName_copy, count_copy=count_copy,  # 柱状图数据
+                           month=month, money=money, monthcount=monthcount,  # 折线图数据
+                           top5_dict=top5_dict,  # top5数据
+                           schoolMoney=schoolMoney, names=names, num=num,  # top10数据
+                           first_dict=first_dict, second_dict=second_dict, fraudways=fraudways, first=first, second=second,  # 所有案件类型的环形图
+                           hidefraud=hidefraud, hidecount=hidecount, monthfraudcount=monthfraudcount,  # 隐藏柱状图
+                           moneyfraudcount=moneyfraudcount, hide_dict=hide_dict,  # 隐藏饼图
                            lasttime=lasttime, tempdata=tempdata
                            )
 

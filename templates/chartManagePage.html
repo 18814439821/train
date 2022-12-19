@@ -36,6 +36,7 @@
                 var xmlhttp=new XMLHttpRequest();
                 xmlhttp.open("POST","/update");
                 xmlhttp.send(data)
+                alert("提交成功，请等待数据返回")
 
             }
     </script>
@@ -60,8 +61,8 @@
                                 <label>各高校诈骗案件发生情况排行柱状图</label>
                                 <div>
                                     <div class="btn">
-                                        <input type="button" class="button" id="button1" name="btn1" value="横向柱状图">
-                                        <input type="button" class="button" id="button2" name="btn2" value="纵向柱状图">
+                                        <input type="button" class="button" id="button1"  value="横向柱状图">
+                                        <input type="button" class="button" id="button2"  value="纵向柱状图">
                                     </div>
                                     <div class="graph">
                                         <img id="bar1" src="../static/images/bar1.png" style="display: block;">
@@ -70,17 +71,47 @@
                                 </div>
                             </li>
 
-
                             <li>
+                                <label>2022年各月份高校受骗情况之受骗金额</label>
+                                <div>
+                                    <div class="btn">
+                                        <input type="button" class="button" id="button5"  value="折线图">
+                                        <input type="button" class="button" id="button6"  value="柱状图">
+                                    </div>
+                                    <div class="graph">
+                                        <img id="line1" src="../static/images/line1.png" style="display: block;">
+                                        <img id="bar3" src="../static/images/bar3.png" style="display: none;">
+                                    </div>
+                                </div>
+                            </li>
+
+
+                </div>
+
+                <div>
+                        <li>
                                 <label>诈骗案件-TOP5-饼图</label>
                                 <div>
                                     <div class="btn">
-                                        <input type="button" class="button" id="button3" name="btn3" value="饼图1">
-                                        <input type="button" class="button" id="button4" name="btn4" value="饼图2">
+                                        <input type="button" class="button" id="button3"  value="饼图1">
+                                        <input type="button" class="button" id="button4"  value="饼图2">
                                     </div>
                                     <div class="graph">
                                         <img id="pie1" src="../static/images/pie1.png" style="display: block;">
                                         <img id="pie2" src="../static/images/pie2.png" style="display: none;">
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <label>2022年各月份高校受骗情况之案件次数</label>
+                                <div>
+                                    <div class="btn">
+
+                                    </div>
+                                    <div class="graph">
+                                        <img id="line2" src="../static/images/line2.png" style="display: block;">
+                                        <img id="bar4" src="../static/images/bar4.png" style="display: none;">
                                     </div>
                                 </div>
                             </li>
@@ -91,46 +122,126 @@
         </div>
     </section>
      <script type="text/javascript">
-
          let bar1=document.getElementById("bar1")
          let bar2=document.getElementById("bar2")
          let pie1=document.getElementById("pie1")
          let pie2=document.getElementById("pie2")
+         let line1=document.getElementById("line1")
+         let line2=document.getElementById("line2")
+         let bar3=document.getElementById("bar3")
+         let bar4=document.getElementById("bar4")
+
+         let button1 = document.getElementById("button1")
+         let button2 = document.getElementById("button2")
+         let button3 = document.getElementById("button3")
+         let button4 = document.getElementById("button4")
+         let button5 = document.getElementById("button5")
+         let button6 = document.getElementById("button6")
+
+
+
+
+
          if(sessionStorage.getItem("bar")==="1"){
                 bar1.style.display='none';
                 bar2.style.display='none';
                 bar2.style.display='block';
+                button2.style.background='orange'
+         }else{
+                bar1.style.display='none';
+                bar2.style.display='none';
+                bar1.style.display='block';
+                button1.style.background='orange'
          }
          if(sessionStorage.getItem("pie")==="1"){
                 pie1.style.display='none';
                 pie2.style.display='none';
                 pie2.style.display='block';
+                button4.style.background='orange'
+         }else{
+                pie1.style.display='none';
+                pie2.style.display='none';
+                pie1.style.display='block';
+                button3.style.background='orange'
+         }
+         if(sessionStorage.getItem("line")==="1"){
+                line1.style.display='none';
+                bar3.style.display='none';
+                bar3.style.display='block';
+                line2.style.display='none';
+                bar4.style.display='none';
+                bar4.style.display='block';
+                button6.style.background='orange'
+         }else{
+                line1.style.display='none';
+                bar3.style.display='none';
+                line1.style.display='block';
+                line2.style.display='none';
+                bar4.style.display='none';
+                line2.style.display='block';
+                button5.style.background='orange'
          }
 
-            document.getElementById("button1").onclick=function (){
+
+            button1.onclick=function (){
                 bar1.style.display='none';
                 bar2.style.display='none';
                 bar1.style.display='block';
                 sessionStorage.setItem("bar","0");
+                this.style.background='orange'
+                button2.style.background=''
             }
-            document.getElementById("button2").onclick=function (){
+            button2.onclick=function (){
                 bar1.style.display='none';
                 bar2.style.display='none';
                 bar2.style.display='block';
                 sessionStorage.setItem("bar","1");
+                this.style.background='orange'
+                button1.style.background=''
             }
-            document.getElementById("button3").onclick=function (){
+            button3.onclick=function (){
                 pie1.style.display='none';
                 pie2.style.display='none';
                 pie1.style.display='block';
                 sessionStorage.setItem("pie","0");
+                this.style.background='orange'
+                button4.style.background=''
             }
-            document.getElementById("button4").onclick=function (){
+            button4.onclick=function (){
                 pie1.style.display='none';
                 pie2.style.display='none';
                 pie2.style.display='block';
                 sessionStorage.setItem("pie","1");
+                this.style.background='orange'
+                button3.style.background=''
             }
+            button5.onclick=function (){
+                line1.style.display='none';
+                bar3.style.display='none';
+                line1.style.display='block';
+                line2.style.display='none';
+                bar4.style.display='none';
+                line2.style.display='block';
+                sessionStorage.setItem("line","0");
+                this.style.background='orange'
+                button6.style.background=''
+            }
+            button6.onclick=function (){
+                line1.style.display='none';
+                bar3.style.display='none';
+                bar3.style.display='block';
+                line2.style.display='none';
+                bar4.style.display='none';
+                bar4.style.display='block';
+                sessionStorage.setItem("line","1");
+                this.style.background='orange'
+                button5.style.background=''
+            }
+
+
+
+
+
 
      </script>
      <div id="dialogMessage" style="opacity: 0;width: 0px;height: 0px;">

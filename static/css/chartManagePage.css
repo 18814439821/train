@@ -52,7 +52,7 @@ body section{
 }
 #central-box ul div li{
   height: 400px;
-  width: 800px;
+  /*width: 800px;*/
   display: flex;
   flex-direction: column;
   border-bottom:1px rgba(255, 255, 255,0.2) solid;
@@ -68,8 +68,8 @@ body section{
 }
 #central-box ul div {
   flex: 1;
-  display: flex;
-    flex-direction: row;
+  /*display: flex;*/
+  /*  flex-direction: row;*/
 }
 #central-box ul li div{
   flex: 5;
@@ -207,4 +207,15 @@ header h1 a {
 img{
   height: 100%;
   width: 100%;
+}
+/* 约束屏幕尺寸 */
+@media screen and (max-width: 1024px) {
+  html {
+    font-size: 42px !important;
+  }
+}
+@media screen and (min-width: 1920px) {
+  html {
+    font-size: 80px !important;
+  }
 }

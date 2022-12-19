@@ -246,7 +246,7 @@
               name: '案件类型',
               type: 'pie',
               radius: '80%',
-              data: {{ dict4|tojson }},
+              data: {{ hide_dict|tojson }},
               emphasis: {
                 itemStyle: {
                   shadowBlur: 10,
@@ -270,7 +270,8 @@
 </script>
 <script>
     let bar = sessionStorage.getItem("bar");
-    let pie = sessionStorage.getItem("pie")
+    let pie = sessionStorage.getItem("pie");
+    let line = sessionStorage.getItem("line");
 
 //柱状图
 if(bar === "1" ){
@@ -280,8 +281,8 @@ if(bar === "1" ){
         {
             type: "inside",  // 支持内部鼠标滚动平移
             yAxisIndex:[0],
-            start: 0,
-            end: 30,
+            start: 100,
+            end: 70,
             zoomOnMouseWheel: false,  // 关闭滚轮缩放
             moveOnMouseWheel: true, // 开启滚轮平移
             moveOnMouseMove: false  // 鼠标移动能触发数据窗口平移
@@ -316,7 +317,7 @@ if(bar === "1" ){
   },
   yAxis: {
     type: 'category',
-    data: {{ univName|tojson }},
+    data: {{ univName_copy|tojson }},
     axisLabel: {
           color: "white",
           fontSize: "15"
@@ -329,7 +330,7 @@ if(bar === "1" ){
       name: '累计发生',
       type: 'bar',
       barWidth: '60%',
-      data: {{ count|tojson }},
+      data: {{ count_copy|tojson }},
         itemStyle: {
                 // 修改柱子圆角
                 barBorderRadius: 2,
@@ -428,7 +429,104 @@ if(bar === "1" ){
 })();
 }
 //折线图
-(function(){
+    //折线图变柱状图
+    if(line==="1"){
+        (function(){
+  var myChart = echarts.init(document.querySelector('.line .chart'));
+  var data=[
+      {
+          color:'#3477fd',
+          name:"受骗金额",
+          data:{{ money|tojson }},
+          formatter: '{b} <br/> {a}:{c}元',
+      },
+      {
+          color:"#e00522",
+          name:"案件发生",
+          data:{{ monthcount|tojson }},
+          formatter: '{b} <br/> {a}:{c}件',
+      }
+  ]
+  option1 = {
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: { // 坐标轴指示器，坐标轴触发有效
+            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+        },
+        formatter: data[0].formatter
+    },
+      legend: {
+      top:"0%",
+      textStyle:{
+        color: "#fff",
+        fontSize: "15"
+      }
+    },
+    grid: {
+        left: '0%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true,
+
+    },
+    xAxis: [{
+        type: 'category',
+        data: {{ month|tojson }},
+        axisTick: {
+            alignWithLabel: true
+        },
+        axisLine:"#fff",
+        axisLabel: {
+          textStyle: {
+            color: "#fff",
+            fontSize: 12
+          }
+        },
+    }],
+    yAxis: [{
+
+        type: 'value',
+        axisLabel: {
+          textStyle: {
+            color: "#fff",
+            fontSize: 12
+          }
+        },
+
+
+    }],
+    series: {
+        name: data[0].name,
+        color:data[0].color,
+        type: 'bar',
+        barWidth: '60%',
+        data: data[0].data
+    }
+};
+  myChart.setOption(option1);
+  //4.让图表跟随屏幕自适应
+  window.addEventListener("resize", function() {
+    myChart.resize();
+  });
+  $(".line h2").on("click", "a", function() {
+    // alert(1);
+    // console.log($(this).index());
+    // 点击 a 之后 根据当前a的索引号 找到对应的 yearData的相关对象
+    // console.log(yearData[$(this).index()]);
+    var obj = data[$(this).index()];
+    option1.series.data = obj.data;
+    option1.series.color = obj.color;
+    option1.series.name = obj.name;
+    option1.tooltip.formatter=obj.formatter;
+
+    // 需要重新渲染
+      myChart.setOption(option1);
+  });
+
+})();
+    }else{
+        //折线图
+        (function(){
   var myChart = echarts.init(document.querySelector('.line .chart'));
   var data=[
       {
@@ -461,7 +559,7 @@ if(bar === "1" ){
       {
           color:"#e00522",
           name:"案件发生",
-          data:{{ count1|tojson }},
+          data:{{ monthcount|tojson }},
           formatter: '{b} <br/> {a}:{c}件',
           areaStyle: {
           // 渐变色
@@ -623,6 +721,8 @@ if(bar === "1" ){
   });
 
 })();
+    }
+
 //top5
 if(pie==="1"){
     //top5样式2
@@ -660,7 +760,7 @@ if(pie==="1"){
         itemStyle: {
           borderRadius: 5
         },
-        data:{{ dict1|tojson }}
+        data:{{ top5_dict|tojson }}
       }
     ]
   };
@@ -709,7 +809,7 @@ window.addEventListener("resize", function() {
         itemStyle: {
           borderRadius: 5
         },
-        data:{{ dict1|tojson }}
+        data:{{ top5_dict|tojson }}
       }
     ]
   };
@@ -875,7 +975,7 @@ window.addEventListener("resize", function() {
         show: false
       },
       data:
-          {{ dict3|tojson}}
+          {{ second_dict|tojson}}
 
     },
     {
@@ -889,7 +989,7 @@ window.addEventListener("resize", function() {
           show:false
           },
       data:
-          {{ dict2|tojson }}
+          {{ first_dict|tojson }}
 
     }
   ]
